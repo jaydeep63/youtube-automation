@@ -1,9 +1,13 @@
 import os, json, hashlib, pickle
+from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 from moviepy.editor import VideoFileClip
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Load config
 with open("config.json") as f:
@@ -61,6 +65,36 @@ def get_metadata(filename, resolution):
 def youtube_auth():
     scopes = ["https://www.googleapis.com/auth/youtube.upload"]
     creds = None
+    
+    # Create client_secret.json from environment variables if it doesn't exist
+    if not os.path.exists("client_secret.json"):
+        client_id = os.getenv("GOOGLE_CLIENT_ID")
+        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        project_id = os.getenv("GOOGLE_PROJECT_ID")
+        
+        if not all([client_id, client_secret, project_id]):
+            raise ValueError(
+                "Missing credentials. Please set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, "
+                "and GOOGLE_PROJECT_ID in your .env file or environment variables."
+            )
+        
+        # Create client_secret.json from environment variables
+        client_secret_data = {
+            "installed": {
+                "client_id": client_id,
+                "project_id": project_id,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_secret": client_secret,
+                "redirect_uris": ["http://localhost"]
+            }
+        }
+        
+        with open("client_secret.json", "w") as f:
+            json.dump(client_secret_data, f)
+        print("✓ Generated client_secret.json from environment variables")
+    
     if os.path.exists("token.pickle"):
         with open("token.pickle", "rb") as token:
             creds = pickle.load(token)
