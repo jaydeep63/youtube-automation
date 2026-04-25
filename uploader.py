@@ -66,34 +66,25 @@ def youtube_auth():
     scopes = ["https://www.googleapis.com/auth/youtube.upload"]
     creds = None
     
-    # Create client_secret.json from environment variables if it doesn't exist
-    if not os.path.exists("client_secret.json"):
-        client_id = os.getenv("GOOGLE_CLIENT_ID")
-        client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-        project_id = os.getenv("GOOGLE_PROJECT_ID")
-        
-        if not all([client_id, client_secret, project_id]):
-            raise ValueError(
-                "Missing credentials. Please set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, "
-                "and GOOGLE_PROJECT_ID in your .env file or environment variables."
-            )
-        
-        # Create client_secret.json from environment variables
-        client_secret_data = {
-            "installed": {
-                "client_id": client_id,
-                "project_id": project_id,
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_secret": client_secret,
-                "redirect_uris": ["http://localhost"]
-            }
-        }
-        
-        with open("client_secret.json", "w") as f:
-            json.dump(client_secret_data, f)
-        print("✓ Generated client_secret.json from environment variables")
+    # Read client_secret.json and interpolate environment variables
+    with open("client_secret.json", "r") as f:
+        client_secret_content = f.read()
+    
+    # Replace environment variable placeholders
+    client_secret_content = client_secret_content.replace("${GOOGLE_CLIENT_ID}", os.getenv("GOOGLE_CLIENT_ID", ""))
+    client_secret_content = client_secret_content.replace("${GOOGLE_CLIENT_SECRET}", os.getenv("GOOGLE_CLIENT_SECRET", ""))
+    client_secret_content = client_secret_content.replace("${GOOGLE_PROJECT_ID}", os.getenv("GOOGLE_PROJECT_ID", ""))
+    
+    # Validate that all env vars were replaced
+    if "${" in client_secret_content:
+        raise ValueError(
+            "Missing environment variables. Please ensure GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, "
+            "and GOOGLE_PROJECT_ID are set in your .env file."
+        )
+    
+    # Write interpolated content to temporary file for authentication
+    with open("client_secret_temp.json", "w") as f:
+        f.write(client_secret_content)
     
     if os.path.exists("token.pickle"):
         with open("token.pickle", "rb") as token:
@@ -102,10 +93,15 @@ def youtube_auth():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", scopes)
+            flow = InstalledAppFlow.from_client_secrets_file("client_secret_temp.json", scopes)
             creds = flow.run_local_server(port=0)
         with open("token.pickle", "wb") as token:
             pickle.dump(creds, token)
+    
+    # Clean up temporary file
+    if os.path.exists("client_secret_temp.json"):
+        os.remove("client_secret_temp.json")
+    
     return build("youtube", "v3", credentials=creds)
 
 def upload_to_youtube(youtube, path, title, description, tags):
