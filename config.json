@@ -1,0 +1,36 @@
+{
+  "scan_folder": "H:\\VALORANT\\VALORANT",
+  "privacyStatus": "public",
+  "youtube_metadata": {
+    "long_form": {
+      "title_template": "Valorant Gameplay - {category} - {filename}",
+      "description_template": "Full Valorant match highlights featuring {category}! 🎮🔥\n\nSubscribe for more epic plays and aces.\n\n#Valorant #Gaming #FPS #Clutch #HighFrags",
+      "tags": ["Valorant", "Gaming", "FPS", "Clutch", "HighFrags", "Esports"]
+    },
+    "shorts": {
+      "title_template": "Valorant Shorts: {category} - {filename}",
+      "description_template": "Quick highlight: {category} in Valorant! ⚡🔥\n\nStay tuned for more shorts and reels.\n\n#Valorant #ValorantShorts #Gaming #FPS #EpicPlay",
+      "tags": ["Valorant", "ValorantShorts", "Gaming", "FPS", "EpicPlay", "Clutch"]
+    }
+  },
+  "categories": {
+    "clutch": {
+      "title_suffix": "Insane Clutch Kill",
+      "tags": ["Valorant", "Clutch", "Gaming", "FPS", "EpicPlay"]
+    },
+    "ace": {
+      "title_suffix": "Epic Ace Highlight",
+      "tags": ["Valorant", "Ace", "Gaming", "FPS", "HighFrags"]
+    },
+    "highfrag": {
+      "title_suffix": "High Frag Gameplay",
+      "tags": ["Valorant", "HighFrags", "Gaming", "FPS", "Esports"]
+    }
+  },
+  "facebook_metadata": {
+    "placeholder": "TODO: Add Facebook upload metadata templates"
+  },
+  "instagram_metadata": {
+    "placeholder": "TODO: Add Instagram upload metadata templates"
+  }
+}
