@@ -2,9 +2,10 @@ import os, json, hashlib, pickle
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-from moviepy.editor import VideoFileClip
+from moviepy import VideoFileClip
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import requests
 
 # Load environment variables from .env file
 load_dotenv()
@@ -45,21 +46,200 @@ def detect_category(filename):
     fname_lower = filename.lower()
     for key, details in CATEGORIES.items():
         if key in fname_lower:
-            return details["title_suffix"], details["tags"]
-    return "General Gameplay", ["Valorant", "Gaming", "FPS"]
+            return key, details
+    # Return default category if no match found
+    default_category = {
+        "title_suffix": "General Gameplay",
+        "primary_keyword": "Valorant Gameplay",
+        "secondary_keywords": ["gaming", "fps", "highlights"],
+        "description_intro": "Check out this Valorant gameplay! 🎮",
+        "description_body": "Great moments from a ranked match. Subscribe for more Valorant content!",
+        "hashtags_list": ["#Valorant", "#Gaming", "#FPS", "#ValorantHighlights"],
+        "tags": ["Valorant", "Gaming", "FPS"]
+    }
+    return "default", default_category
+
+def generate_hashtags(category_key):
+    """Generate SEO-optimized hashtags from category data"""
+    if category_key in CATEGORIES:
+        hashtags = CATEGORIES[category_key].get("hashtags_list", [])
+    else:
+        hashtags = CATEGORIES["default"].get("hashtags_list", []) if "default" in CATEGORIES else ["#Valorant"]
+    return " ".join(hashtags)
+
+def check_ollama_available():
+    """Check if Ollama is running on localhost:11434"""
+    try:
+        response = requests.get("http://localhost:11434/api/tags", timeout=2)
+        return response.status_code == 200
+    except:
+        return False
+
+def generate_title_with_ollama(filename, category_key, template_type="long_form"):
+    """Generate title using Ollama AI"""
+    try:
+        category = CATEGORIES.get(category_key, {})
+        primary_keyword = category.get("primary_keyword", "Valorant")
+        title_suffix = category.get("title_suffix", "Gameplay")
+        
+        prompt = f"""Generate a YouTube video title for a Valorant gaming video.
+Filename: {filename}
+Type: {title_suffix}
+Keywords to include: {primary_keyword}, YouTube SEO
+Requirements:
+- Maximum 60 characters
+- Include primary keyword at the start
+- Be catchy and engaging
+- Include emojis if appropriate
+
+Generate ONLY the title, nothing else."""
+        
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "mistral", "prompt": prompt, "stream": False},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            title = response.json().get("response", "").strip()
+            # Clean up title
+            title = title.replace("\n", "").replace("Title: ", "")
+            if len(title) > 60:
+                title = title[:57] + "..."
+            return title
+        else:
+            return None
+    except Exception as e:
+        print(f"Ollama generation error: {e}")
+        return None
+
+def generate_description_with_ollama(filename, category_key):
+    """Generate description using Ollama AI"""
+    try:
+        category = CATEGORIES.get(category_key, {})
+        title_suffix = category.get("title_suffix", "Gameplay")
+        hashtags = generate_hashtags(category_key)
+        
+        prompt = f"""Generate a YouTube video description for a Valorant gaming video.
+Video type: {title_suffix}
+Filename: {filename}
+Hashtags to include: {hashtags}
+
+Requirements:
+- First line should be engaging and summarize the video
+- 2-3 sentences of body text
+- Include the hashtags
+- Maximum 4900 characters
+- Professional but conversational tone
+
+Generate ONLY the description, nothing else."""
+        
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "mistral", "prompt": prompt, "stream": False},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            description = response.json().get("response", "").strip()
+            description = description.replace("Description: ", "")
+            return description
+        else:
+            return None
+    except Exception as e:
+        print(f"Ollama generation error: {e}")
+        return None
+
+def optimize_title_seo(template, filename, category_key):
+    """Optimize title with front-loaded primary keywords for better SEO"""
+    if category_key in CATEGORIES:
+        category = CATEGORIES[category_key]
+        primary_keyword = category.get("primary_keyword", "Valorant")
+        title_suffix = category.get("title_suffix", "Gameplay")
+    else:
+        primary_keyword = "Valorant"
+        title_suffix = "Gameplay"
+    
+    # Replace placeholders - primary keywords front-loaded for SEO
+    title = template.replace("{primary_keyword}", primary_keyword)
+    title = title.replace("{category}", title_suffix)
+    title = title.replace("{filename}", filename)
+    
+    # Keep title under 60 chars for optimal YouTube display
+    if len(title) > 60:
+        title = title[:57] + "..."
+    
+    return title
+
+def optimize_description_seo(template, category_key):
+    """Create SEO-optimized description with keyword placement"""
+    if category_key in CATEGORIES:
+        category = CATEGORIES[category_key]
+        description_intro = category.get("description_intro", "Check out this Valorant gameplay!")
+        description_body = category.get("description_body", "Amazing moments from a match!")
+        secondary_keywords = category.get("secondary_keywords", [])
+    else:
+        description_intro = "Check out this Valorant gameplay!"
+        description_body = "Amazing moments from a match!"
+        secondary_keywords = []
+    
+    hashtags = generate_hashtags(category_key)
+    
+    # Build description with strategic keyword placement
+    description = template.replace("{description_intro}", description_intro)
+    description = description.replace("{description_body}", description_body)
+    description = description.replace("{hashtags}", hashtags)
+    
+    # Add secondary keywords naturally in description
+    if secondary_keywords and len(description) < 4900:  # YouTube limit is 5000
+        keywords_text = f"\nKeywords: {', '.join(secondary_keywords[:5])}"
+        description = description.replace("{hashtags}", keywords_text + "\n\n{hashtags}").replace("{hashtags}", hashtags)
+    
+    return description
 
 def get_metadata(filename, resolution):
+    """Generate metadata with SEO optimization and category-specific templates"""
+    # Determine video format (long_form or shorts)
     if resolution == (1920, 1080):
-        template = META["long_form"]
+        template_type = "long_form"
     elif resolution == (1080, 1920):
-        template = META["shorts"]
+        template_type = "shorts"
     else:
-        template = META["long_form"]
+        template_type = "long_form"
 
-    category_suffix, category_tags = detect_category(filename)
-    title = template["title_template"].replace("{filename}", filename).replace("{category}", category_suffix)
-    description = template["description_template"].replace("{category}", category_suffix)
-    tags = list(set(template["tags"] + category_tags))
+    template = META[template_type]
+    category_key, category_details = detect_category(filename)
+    
+    # Check if Ollama should be used
+    use_ollama = config.get("use_ollama", False)
+    ollama_available = False
+    
+    if use_ollama:
+        ollama_available = check_ollama_available()
+        if ollama_available:
+            print(f"✓ Ollama found. Generating AI title and description...")
+        else:
+            print("✗ Ollama not running. Falling back to templates.")
+    
+    # Generate title (AI or template)
+    if use_ollama and ollama_available:
+        title = generate_title_with_ollama(filename, category_key, template_type)
+        if title is None:
+            title = optimize_title_seo(template["title_template"], filename, category_key)
+    else:
+        title = optimize_title_seo(template["title_template"], filename, category_key)
+    
+    # Generate description (AI or template)
+    if use_ollama and ollama_available:
+        description = generate_description_with_ollama(filename, category_key)
+        if description is None:
+            description = optimize_description_seo(template["description_template"], category_key)
+    else:
+        description = optimize_description_seo(template["description_template"], category_key)
+    
+    # Combine tags: template tags + category tags + secondary keywords as tags
+    tags = list(set(template["tags"] + category_details.get("tags", [])))
+    
     return title, description, tags
 
 def youtube_auth():

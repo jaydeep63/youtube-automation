@@ -1,30 +1,46 @@
 {
   "scan_folder": "H:\\VALORANT\\VALORANT",
   "privacyStatus": "public",
+  "use_ollama": true,
   "youtube_metadata": {
     "long_form": {
-      "title_template": "Valorant Gameplay - {category} - {filename}",
-      "description_template": "Full Valorant match highlights featuring {category}! 🎮🔥\n\nSubscribe for more epic plays and aces.\n\n#Valorant #Gaming #FPS #Clutch #HighFrags",
-      "tags": ["Valorant", "Gaming", "FPS", "Clutch", "HighFrags", "Esports"]
+      "title_template": "{primary_keyword} Valorant - {category} {filename}",
+      "description_template": "{description_intro}\n\n{description_body}\n\nTimestamps:\n0:00 - Intro\n\nSubscribe for more {primary_keyword} Valorant gameplay!\n\n{hashtags}",
+      "tags": ["Valorant", "Gaming", "FPS"]
     },
     "shorts": {
-      "title_template": "Valorant Shorts: {category} - {filename}",
-      "description_template": "Quick highlight: {category} in Valorant! ⚡🔥\n\nStay tuned for more shorts and reels.\n\n#Valorant #ValorantShorts #Gaming #FPS #EpicPlay",
-      "tags": ["Valorant", "ValorantShorts", "Gaming", "FPS", "EpicPlay", "Clutch"]
+      "title_template": "{primary_keyword} Valorant Shorts - {category}",
+      "description_template": "Quick {primary_keyword} highlight in Valorant! ⚡🔥\n\nSubscribe for more {primary_keyword} content!\n\n{hashtags}",
+      "tags": ["Valorant", "ValorantShorts", "Gaming", "FPS", "Shorts"]
     }
   },
   "categories": {
     "clutch": {
-      "title_suffix": "Insane Clutch Kill",
-      "tags": ["Valorant", "Clutch", "Gaming", "FPS", "EpicPlay"]
+      "title_suffix": "Insane Clutch",
+      "primary_keyword": "1v5 Clutch",
+      "secondary_keywords": ["clutch play", "1v5", "miracle play", "comeback"],
+      "description_intro": "INSANE 1v5 CLUTCH in Valorant! This might be the craziest clutch ever! 🔥",
+      "description_body": "Watch as we pull off an impossible 1v5 clutch in a high-pressure ranked game. Perfect crosshair placement and game sense make all the difference!",
+      "hashtags_list": ["#ValorantClutch", "#1v5", "#EpicPlay", "#ValorantHighlights", "#Gaming", "#FPS"],
+      "tags": ["Valorant", "Clutch", "1v5", "Gaming", "FPS", "EpicPlay"]
     },
     "ace": {
-      "title_suffix": "Epic Ace Highlight",
-      "tags": ["Valorant", "Ace", "Gaming", "FPS", "HighFrags"]
+      "title_suffix": "Epic Ace",
+      "primary_keyword": "5K Ace",
+      "secondary_keywords": ["ace", "5 kill", "triple kill", "team wipe"],
+      "description_intro": "ACE IN VALORANT! We just got a 5K to completely wipe the enemy team! 🎯",
+      "description_body": "Nothing beats getting a full team wipe with an ace! Check out these incredible moments where we take down all 5 enemies. Pure skill and strategy!",
+      "hashtags_list": ["#ValorantAce", "#5K", "#HighFrags", "#ValorantHighlights", "#Esports", "#ProPlay"],
+      "tags": ["Valorant", "Ace", "5K", "Gaming", "FPS", "HighFrags"]
     },
     "highfrag": {
       "title_suffix": "High Frag Gameplay",
-      "tags": ["Valorant", "HighFrags", "Gaming", "FPS", "Esports"]
+      "primary_keyword": "High Frag",
+      "secondary_keywords": ["multi-kill", "high kills", "frag out", "frags"],
+      "description_intro": "HIGH FRAG VALORANT GAMEPLAY! Multiple kills and amazing plays in this intense match! 💪",
+      "description_body": "Showcasing some of the best high-frag moments from Valorant ranked. Perfect positioning and aim lead to consistent kills throughout the round.",
+      "hashtags_list": ["#ValorantGameplay", "#HighFrags", "#MultiKill", "#ValorantHighlights", "#ProPlayer", "#FPS"],
+      "tags": ["Valorant", "HighFrags", "Gaming", "FPS", "MultiKill", "Esports"]
     }
   },
   "facebook_metadata": {
