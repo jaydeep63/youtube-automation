@@ -121,7 +121,7 @@ class SetupWizard:
         # Description
         desc = tk.Label(
             frame,
-            text="Choose the folder where your MP4 videos are stored.\nThe uploader will scan this folder for videos to upload.",
+            text="Choose the folder where your MP4 videos are stored.\nThe uploader will scan this folder for videos to upload.\nThis folder setting is saved and used permanently.",
             font=("Arial", 10),
             bg='#f0f0f0',
             justify=tk.LEFT
@@ -162,10 +162,11 @@ class SetupWizard:
         
         info_text = tk.Label(
             info_frame,
-            text="💡 Example: C:\\Users\\YourName\\Videos\\Valorant",
+            text="💡 Example: C:\\Videos\\MyContent\n\nContent type is detected from video filenames:\n'gameplay_video.mp4' → Gaming | 'unboxing_phone.mp4' → Unboxing",
             font=("Arial", 9),
             bg='#E3F2FD',
-            fg='#1565C0'
+            fg='#1565C0',
+            justify=tk.LEFT
         )
         info_text.pack(padx=10, pady=10)
     

@@ -1,46 +1,46 @@
 {
-  "scan_folder": "H:\\VALORANT\\VALORANT",
+  "scan_folder": "H:\\Videos\\Gameplay",
   "privacyStatus": "public",
   "use_ollama": true,
   "youtube_metadata": {
     "long_form": {
-      "title_template": "{primary_keyword} Valorant - {category} {filename}",
-      "description_template": "{description_intro}\n\n{description_body}\n\nTimestamps:\n0:00 - Intro\n\nSubscribe for more {primary_keyword} Valorant gameplay!\n\n{hashtags}",
-      "tags": ["Valorant", "Gaming", "FPS"]
+      "title_template": "{primary_keyword} - {category} {filename}",
+      "description_template": "{description_intro}\n\n{description_body}\n\nTimestamps:\n0:00 - Intro\n\nSubscribe for more content!\n\n{hashtags}",
+      "tags": ["Trending", "Highlights"]
     },
     "shorts": {
-      "title_template": "{primary_keyword} Valorant Shorts - {category}",
-      "description_template": "Quick {primary_keyword} highlight in Valorant! ⚡🔥\n\nSubscribe for more {primary_keyword} content!\n\n{hashtags}",
-      "tags": ["Valorant", "ValorantShorts", "Gaming", "FPS", "Shorts"]
+      "title_template": "{primary_keyword} Shorts - {category}",
+      "description_template": "Quick {primary_keyword} highlight! ⚡🔥\n\nSubscribe for more content!\n\n{hashtags}",
+      "tags": ["Trending", "Highlights", "Shorts"]
     }
   },
   "categories": {
     "clutch": {
-      "title_suffix": "Insane Clutch",
-      "primary_keyword": "1v5 Clutch",
-      "secondary_keywords": ["clutch play", "1v5", "miracle play", "comeback"],
-      "description_intro": "INSANE 1v5 CLUTCH in Valorant! This might be the craziest clutch ever! 🔥",
-      "description_body": "Watch as we pull off an impossible 1v5 clutch in a high-pressure ranked game. Perfect crosshair placement and game sense make all the difference!",
-      "hashtags_list": ["#ValorantClutch", "#1v5", "#EpicPlay", "#ValorantHighlights", "#Gaming", "#FPS"],
-      "tags": ["Valorant", "Clutch", "1v5", "Gaming", "FPS", "EpicPlay"]
+      "title_suffix": "Insane Moment",
+      "primary_keyword": "Epic Moment",
+      "secondary_keywords": ["epic", "moment", "highlight", "viral", "trending"],
+      "description_intro": "INSANE MOMENT! This is absolutely incredible! 🔥",
+      "description_body": "Watch this amazing moment unfold. Pure skill and talent!",
+      "hashtags_list": ["#Epic", "#Moment", "#Trending", "#Viral", "#MustWatch"],
+      "tags": ["Epic", "Trending", "Viral"]
     },
     "ace": {
-      "title_suffix": "Epic Ace",
-      "primary_keyword": "5K Ace",
-      "secondary_keywords": ["ace", "5 kill", "triple kill", "team wipe"],
-      "description_intro": "ACE IN VALORANT! We just got a 5K to completely wipe the enemy team! 🎯",
-      "description_body": "Nothing beats getting a full team wipe with an ace! Check out these incredible moments where we take down all 5 enemies. Pure skill and strategy!",
-      "hashtags_list": ["#ValorantAce", "#5K", "#HighFrags", "#ValorantHighlights", "#Esports", "#ProPlay"],
-      "tags": ["Valorant", "Ace", "5K", "Gaming", "FPS", "HighFrags"]
+      "title_suffix": "Epic Performance",
+      "primary_keyword": "Amazing Performance",
+      "secondary_keywords": ["performance", "skill", "talent", "amazing", "incredible"],
+      "description_intro": "AMAZING PERFORMANCE! Absolutely incredible! 🎯",
+      "description_body": "Check out this fantastic moment. Skill and talent combined perfectly!",
+      "hashtags_list": ["#Performance", "#Talent", "#Trending", "#Viral", "#Amazing"],
+      "tags": ["Performance", "Trending", "Amazing"]
     },
     "highfrag": {
-      "title_suffix": "High Frag Gameplay",
-      "primary_keyword": "High Frag",
-      "secondary_keywords": ["multi-kill", "high kills", "frag out", "frags"],
-      "description_intro": "HIGH FRAG VALORANT GAMEPLAY! Multiple kills and amazing plays in this intense match! 💪",
-      "description_body": "Showcasing some of the best high-frag moments from Valorant ranked. Perfect positioning and aim lead to consistent kills throughout the round.",
-      "hashtags_list": ["#ValorantGameplay", "#HighFrags", "#MultiKill", "#ValorantHighlights", "#ProPlayer", "#FPS"],
-      "tags": ["Valorant", "HighFrags", "Gaming", "FPS", "MultiKill", "Esports"]
+      "title_suffix": "Best Moments",
+      "primary_keyword": "Best Highlights",
+      "secondary_keywords": ["highlights", "best", "moments", "viral", "trending"],
+      "description_intro": "BEST MOMENTS! Absolutely incredible content! 💪",
+      "description_body": "Showcasing some of the best moments. Pure skill and amazing content!",
+      "hashtags_list": ["#BestMoments", "#Highlights", "#Trending", "#Viral", "#Content"],
+      "tags": ["Highlights", "Trending", "Best"]
     }
   },
   "facebook_metadata": {

@@ -4,14 +4,16 @@ Automation to upload videos to your socials from a folder in your local drive
 # YouTube Automation Script
 
 ## Features
-- Scans `H:\VALORANT\VALORANT` for new `.mp4` files.
+- Scans a configured folder (set once during setup) for new `.mp4` files.
 - Detects resolution:  
   - 1920x1080 → Long-form video  
   - 1080x1920 → Shorts  
-- Applies Valorant-themed metadata templates.
+- **Auto-detects content type from video filename** (Gaming, Unboxing, Review, Mukbang, Vlog, Tutorial, etc.)
+- Applies customizable metadata templates based on video category
 - Uploads via YouTube Data API v3.
 - Prevents duplicates using `uploaded_log.json`.
-- Placeholders for Facebook/Instagram integration.
+- Supports AI-powered title/description generation (via Ollama)
+- Works with ANY video type and content
 
 ## Setup
 1. Clone the repo.
@@ -43,19 +45,48 @@ Automation to upload videos to your socials from a folder in your local drive
 
 ## Step‑by‑Step Example: Editing config.json for Multiple Categories
 
-1. Locate the `categories` section in `config.json`.
-2. Add or edit categories. For example:
+1. The `categories` section in `config.json` lets you define custom categories that match filename patterns.
+2. Example: Add a category for "doom" gameplay:
    ```json
-   "ace": {
-     "title_suffix": "Epic Ace Highlight",
-     "tags": ["Valorant", "Ace", "Gaming", "FPS", "HighFrags"]
+   "doom": {
+     "title_suffix": "Doom Highlights",
+     "primary_keyword": "Doom Gameplay",
+     "tags": ["Doom", "Gaming", "FPS"]
    }
-3. Modify metadata templates to include {category}:
- "title_template": "Valorant Gameplay - {category} - {filename}"
-4. Adjust descriptions to dynamically reflect the category:
- "description_template": "Full Valorant match highlights featuring {category}!"
-5. Save and run the script. Example: match1_clutch.mp4 → Title becomes
-Valorant Gameplay - Insane Clutch Kill - match1_clutch.mp4.
+   ```
+3. If your filename contains "doom" (e.g., `doom_gameplay.mp4`), this category will be used.
+4. The app generates metadata dynamically based on the detected content type and category.
+5. Example: `clutch_moment_gaming.mp4` → Uses the "clutch" category + "Gaming" content type detection.
+
+## How It Works: Content Type Detection
+
+The app detects the content type **from your video filename**, not the folder:
+
+**Supported Content Types:**
+- `gameplay`, `game`, `valorant`, `fortnite`, etc. → **Gaming**
+- `unboxing`, `opening`, `reveal` → **Unboxing**
+- `review`, `tested`, `honest` → **Product Review**
+- `mukbang`, `eating`, `asmr` → **Mukbang**
+- `vlog`, `daily`, `routine` → **Vlog**
+- `tutorial`, `how to`, `guide`, `tips` → **Tutorial**
+- `short`, `clip`, `moment` → **Short Video**
+
+**Examples:**
+- `my_gaming_session.mp4` → Detected as **Gaming**
+- `iphone_unboxing_2024.mp4` → Detected as **Unboxing**
+- `product_review_honest.mp4` → Detected as **Product Review**
+- `mukbang_asmr.mp4` → Detected as **Mukbang**
+
+## Configuration: Video Folder (Set Once)
+
+Edit `config.json` and set `scan_folder` during first setup:
+```json
+{
+  "scan_folder": "H:\\Videos\\MyContent",
+  ...
+}
+```
+The folder location is saved and won't change. Just drop videos into it and the app handles the rest!
 
 
 

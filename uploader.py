@@ -42,20 +42,45 @@ def get_resolution(path):
     clip = VideoFileClip(path)
     return clip.size  # (width, height)
 
+def detect_content_type(filename):
+    """Detect content type from video filename"""
+    fname_lower = filename.lower()
+    
+    # Content type keywords mapping
+    content_types = {
+        "gaming": {"keywords": ["gameplay", "game", "valorant", "fortnite", "pubg", "minecraft", "gta", "elden", "fps", "moba"], "type": "Gaming"},
+        "unboxing": {"keywords": ["unboxing", "unbox", "opening", "reveal"], "type": "Unboxing"},
+        "review": {"keywords": ["review", "tested", "honest", "thoughts"], "type": "Product Review"},
+        "mukbang": {"keywords": ["mukbang", "eating", "asmr", "food"], "type": "Mukbang"},
+        "vlog": {"keywords": ["vlog", "daily", "day in my", "routine", "vlogging"], "type": "Vlog"},
+        "tutorial": {"keywords": ["tutorial", "how to", "guide", "tips", "learn", "diy"], "type": "Tutorial"},
+        "shorts": {"keywords": ["short", "quick", "clip", "moment"], "type": "Short"},
+    }
+    
+    for content_key, content_info in content_types.items():
+        for keyword in content_info["keywords"]:
+            if keyword in fname_lower:
+                return content_key, content_info["type"]
+    
+    # Default to generic content
+    return "generic", "Content"
+
 def detect_category(filename):
     fname_lower = filename.lower()
     for key, details in CATEGORIES.items():
         if key in fname_lower:
             return key, details
     # Return default category if no match found
+    content_type_key, content_type_name = detect_content_type(filename)
+    
     default_category = {
-        "title_suffix": "General Gameplay",
-        "primary_keyword": "Valorant Gameplay",
-        "secondary_keywords": ["gaming", "fps", "highlights"],
-        "description_intro": "Check out this Valorant gameplay! 🎮",
-        "description_body": "Great moments from a ranked match. Subscribe for more Valorant content!",
-        "hashtags_list": ["#Valorant", "#Gaming", "#FPS", "#ValorantHighlights"],
-        "tags": ["Valorant", "Gaming", "FPS"]
+        "title_suffix": "Highlights",
+        "primary_keyword": f"{content_type_name} Highlights",
+        "secondary_keywords": ["viral", "trending", "highlights", "must watch"],
+        "description_intro": f"Check out this amazing {content_type_name.lower()}! 🎬",
+        "description_body": f"Don't miss this incredible {content_type_name.lower()} video. Like, comment, and subscribe for more content!",
+        "hashtags_list": [f"#{content_type_name.replace(' ', '')}", "#Trending", "#Highlights", "#MustWatch"],
+        "tags": [content_type_name, "Trending", "Highlights"]
     }
     return "default", default_category
 
@@ -64,7 +89,7 @@ def generate_hashtags(category_key):
     if category_key in CATEGORIES:
         hashtags = CATEGORIES[category_key].get("hashtags_list", [])
     else:
-        hashtags = CATEGORIES["default"].get("hashtags_list", []) if "default" in CATEGORIES else ["#Valorant"]
+        hashtags = CATEGORIES["default"].get("hashtags_list", []) if "default" in CATEGORIES else ["#Trending", "#Highlights"]
     return " ".join(hashtags)
 
 def check_ollama_available():
@@ -79,10 +104,11 @@ def generate_title_with_ollama(filename, category_key, template_type="long_form"
     """Generate title using Ollama AI"""
     try:
         category = CATEGORIES.get(category_key, {})
-        primary_keyword = category.get("primary_keyword", "Valorant")
-        title_suffix = category.get("title_suffix", "Gameplay")
+        primary_keyword = category.get("primary_keyword", "Video Highlights")
+        title_suffix = category.get("title_suffix", "Highlights")
+        content_type_key, content_type_name = detect_content_type(filename)
         
-        prompt = f"""Generate a YouTube video title for a Valorant gaming video.
+        prompt = f"""Generate a YouTube video title for a {content_type_name} video.
 Filename: {filename}
 Type: {title_suffix}
 Keywords to include: {primary_keyword}, YouTube SEO
@@ -117,10 +143,11 @@ def generate_description_with_ollama(filename, category_key):
     """Generate description using Ollama AI"""
     try:
         category = CATEGORIES.get(category_key, {})
-        title_suffix = category.get("title_suffix", "Gameplay")
+        title_suffix = category.get("title_suffix", "Highlights")
         hashtags = generate_hashtags(category_key)
+        content_type_key, content_type_name = detect_content_type(filename)
         
-        prompt = f"""Generate a YouTube video description for a Valorant gaming video.
+        prompt = f"""Generate a YouTube video description for a {content_type_name} video.
 Video type: {title_suffix}
 Filename: {filename}
 Hashtags to include: {hashtags}
@@ -154,11 +181,11 @@ def optimize_title_seo(template, filename, category_key):
     """Optimize title with front-loaded primary keywords for better SEO"""
     if category_key in CATEGORIES:
         category = CATEGORIES[category_key]
-        primary_keyword = category.get("primary_keyword", "Valorant")
-        title_suffix = category.get("title_suffix", "Gameplay")
+        primary_keyword = category.get("primary_keyword", "Video Highlights")
+        title_suffix = category.get("title_suffix", "Highlights")
     else:
-        primary_keyword = "Valorant"
-        title_suffix = "Gameplay"
+        primary_keyword = "Video Highlights"
+        title_suffix = "Highlights"
     
     # Replace placeholders - primary keywords front-loaded for SEO
     title = template.replace("{primary_keyword}", primary_keyword)
@@ -175,12 +202,12 @@ def optimize_description_seo(template, category_key):
     """Create SEO-optimized description with keyword placement"""
     if category_key in CATEGORIES:
         category = CATEGORIES[category_key]
-        description_intro = category.get("description_intro", "Check out this Valorant gameplay!")
-        description_body = category.get("description_body", "Amazing moments from a match!")
+        description_intro = category.get("description_intro", "Check out this amazing content!")
+        description_body = category.get("description_body", "Like, comment, and subscribe for more!")
         secondary_keywords = category.get("secondary_keywords", [])
     else:
-        description_intro = "Check out this Valorant gameplay!"
-        description_body = "Amazing moments from a match!"
+        description_intro = "Check out this amazing content!"
+        description_body = "Like, comment, and subscribe for more!"
         secondary_keywords = []
     
     hashtags = generate_hashtags(category_key)
